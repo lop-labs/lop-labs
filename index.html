@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOP Labs | Central Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <header class="main-header">
+            <div>
+                <h1>LOP Labs</h1>
+                <p>Personal Data-Driven Analytics Platform</p>
+            </div>
+        </header>
+
+        <div class="grid-layout">
+            <!-- Left Column: Tasks & Projects -->
+            <main class="left-column">
+                <section class="card">
+                    <h2>Task Management</h2>
+                    <form id="task-form">
+                        <input type="text" id="task-input" placeholder="What needs to be done?" required>
+                        <select id="task-project-select">
+                            <option value="Independent Research">Independent Research</option>
+                            <option value="Creative Work">Creative Work</option>
+                            <option value="Technical Projects">Technical Projects</option>
+                            <option value="Academic">Academic</option>
+                        </select>
+                        <button type="submit">Add Task</button>
+                    </form>
+                    <ul id="task-list" class="data-list"></ul>
+                </section>
+            </main>
+
+            <!-- Right Column: Analytics & Stopwatch -->
+            <aside class="right-column">
+                <section class="card timer-card">
+                    <h2>Temporal Tracker</h2>
+                    <div class="timer-display-box">
+                        <div id="timer-display">00:00:00</div>
+                    </div>
+                    
+                    <!-- STEP 1: Pre-Session Configuration -->
+                    <div id="pre-session-inputs" class="tracker-form">
+                        <div class="input-group">
+                            <label>Context Details</label>
+                            <input type="text" id="study-subject" placeholder="Subject (e.g., Music Production)">
+                            <input type="text" id="study-topic" placeholder="Topic / Specific Focus">
+                            <select id="study-project-select">
+                                <option value="Independent Research">Independent Research</option>
+                                <option value="Creative Work">Creative Work</option>
+                                <option value="Technical Projects">Technical Projects</option>
+                                <option value="Academic">Academic</option>
+                            </select>
+                        </div>
+                        <button id="timer-btn">Start Focus Block</button>
+                    </div>
+
+                    <!-- STEP 2: Post-Session Review (Hidden by default) -->
+                    <div id="post-session-review" class="tracker-form" style="display: none;">
+                        <div class="input-group">
+                            <label>Subjective Experience (Psychological Time)</label>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                                The block is complete. How did your mind perceive this duration compared to the actual clock?
+                            </p>
+                            <select id="subjective-experience">
+                                <option value="Felt faster (Time Flew)">Felt faster (Time Flew)</option>
+                                <option value="Normal / Balanced">Normal / Balanced</option>
+                                <option value="Felt slower (Drag / Grind)">Felt slower (Drag / Grind)</option>
+                            </select>
+                        </div>
+                        <button id="save-session-btn" style="background: var(--accent);">Confirm & Log Block</button>
+                    </div>
+                </section>
+
+                <section class="card">
+                    <h2>Logged Sessions & Analytics</h2>
+                    <ul id="session-list" class="data-list"></ul>
+                </section>
+            </aside>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
