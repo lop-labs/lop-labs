@@ -3,6 +3,7 @@ const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 const taskProjectSelect = document.getElementById('task-project-select');
 const taskList = document.getElementById('task-list');
+const taskCount = document.getElementById('task-count');
 
 const defaultTasks = [
     { text: "Draft verse focusing on internal discipline and the mental grind", project: "Creative Work" },
@@ -12,16 +13,29 @@ const defaultTasks = [
 
 let tasks = JSON.parse(localStorage.getItem('lop_tasks')) || defaultTasks;
 
+function escapeHTML(value) {
+    const element = document.createElement('div');
+    element.textContent = value;
+    return element.innerHTML;
+}
+
 function renderTasks() {
     taskList.innerHTML = '';
+    taskCount.textContent = `${tasks.length} ${tasks.length === 1 ? 'task' : 'tasks'}`;
+
+    if (!tasks.length) {
+        taskList.innerHTML = '<li class="empty-state">Your list is clear. Add one meaningful next step.</li>';
+        return;
+    }
+
     tasks.forEach((task, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
             <div>
-                <span class="task-text">${task.text}</span>
-                <br><span class="tag">${task.project}</span>
+                <span class="task-text">${escapeHTML(task.text)}</span>
+                <br><span class="tag">${escapeHTML(task.project)}</span>
             </div>
-            <button onclick="deleteTask(${index})" style="background:var(--danger); padding: 0.4rem 0.8rem; font-size:0.85rem;">Remove</button>
+            <button class="remove-btn" onclick="deleteTask(${index})" aria-label="Remove ${escapeHTML(task.text)}">Remove</button>
         `;
         taskList.appendChild(li);
     });
@@ -54,6 +68,7 @@ const timerCard = document.querySelector('.timer-card');
 const timerDisplay = document.getElementById('timer-display');
 const timerBtn = document.getElementById('timer-btn');
 const saveSessionBtn = document.getElementById('save-session-btn');
+const timerState = document.getElementById('timer-state');
 
 const preSessionInputs = document.getElementById('pre-session-inputs');
 const postSessionReview = document.getElementById('post-session-review');
@@ -63,6 +78,7 @@ const studyTopic = document.getElementById('study-topic');
 const studyProjectSelect = document.getElementById('study-project-select');
 const subjectiveExperience = document.getElementById('subjective-experience');
 const sessionList = document.getElementById('session-list');
+const sessionCount = document.getElementById('session-count');
 
 let timerInterval = null;
 let totalSeconds = 0;
@@ -88,16 +104,23 @@ function formatTime(seconds) {
 
 function renderSessions() {
     sessionList.innerHTML = '';
+    sessionCount.textContent = `${sessions.length} logged`;
+
+    if (!sessions.length) {
+        sessionList.innerHTML = '<li class="empty-state">No sessions logged yet. Your focused work will appear here.</li>';
+        return;
+    }
+
     sessions.forEach((session, index) => {
         const li = document.createElement('li');
         li.innerHTML = `
             <div class="session-details">
-                <strong>${session.subject}</strong> (${session.topic})
-                <small>Project: <strong>${session.project}</strong></small>
-                <small>Actual: ${session.duration} | Perceived: ${session.subjective}</small>
-                <small style="color: var(--text-muted); font-size: 0.75rem;">Logged: ${session.date}</small>
+                <strong>${escapeHTML(session.subject)}</strong>
+                <small>${escapeHTML(session.topic)} · ${escapeHTML(session.project)}</small>
+                <small>Actual ${escapeHTML(session.duration)} · ${escapeHTML(session.subjective)}</small>
+                <small>Logged ${escapeHTML(session.date)}</small>
             </div>
-            <button onclick="deleteSession(${index})" style="background:var(--danger); padding: 0.4rem 0.8rem; font-size:0.85rem;">Remove</button>
+            <button class="remove-btn" onclick="deleteSession(${index})" aria-label="Remove ${escapeHTML(session.subject)} session">Remove</button>
         `;
         sessionList.appendChild(li);
     });
@@ -110,13 +133,15 @@ function toggleTimer() {
 
         preSessionInputs.style.display = 'none';
         postSessionReview.style.display = 'flex';
+        timerState.textContent = 'Review';
         
         // Add pulsing visual alert highlight
         timerCard.classList.add('review-active');
     } else {
         isTiming = true;
-        timerBtn.textContent = "Stop Session";
+        timerBtn.innerHTML = 'Stop session <span aria-hidden="true">■</span>';
         timerBtn.classList.add('running');
+        timerState.textContent = 'In progress';
         
         studySubject.disabled = true;
         studyTopic.disabled = true;
@@ -141,7 +166,7 @@ function saveFinalSession() {
         project: project,
         duration: formatTime(totalSeconds),
         subjective: subjective,
-        date: new Date().toLocaleDateString()
+        date: new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })
     };
 
     sessions.push(newSession);
@@ -156,8 +181,9 @@ function saveFinalSession() {
     totalSeconds = 0;
     timerDisplay.textContent = "00:00:00";
     
-    timerBtn.textContent = "Start Focus Block";
+    timerBtn.innerHTML = 'Start focus block <span aria-hidden="true">→</span>';
     timerBtn.classList.remove('running');
+    timerState.textContent = 'Ready';
     
     postSessionReview.style.display = 'none';
     preSessionInputs.style.display = 'flex';
